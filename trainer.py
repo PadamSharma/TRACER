@@ -20,6 +20,7 @@ from util.losses import Optimizer, Scheduler, Criterion
 from model.TRACER import TRACER
 from postprocessing import PostProcess
 from torch.utils.tensorboard import SummaryWriter
+import matplotlib.pyplot as plt 
 
 
 
@@ -60,10 +61,27 @@ class Trainer():
         min_loss = 1000
         early_stopping = 0
         t = time.time()
+
+        train_loss_list = []
+        val_loss_list = []
+
+        train_mae_list = []
+        val_mae_list = []
+
+        epoch_list = []
+
         for epoch in range(1, args.epochs + 1):
             self.epoch = epoch
+            epoch_list.append
             train_loss, train_mae = self.training(args)
+            train_loss_list.append(train_loss)
+            train_mae_list.append(train_mae)
+
             val_loss, val_mae = self.validate()
+            val_loss_list.append(val_loss)
+            val_mae_list.append(val_mae)
+
+            plt.plot()
 
             # Train
             self.writer.add_scalar("Loss/train", train_loss, epoch)
@@ -71,6 +89,9 @@ class Trainer():
             #Val
             self.writer.add_scalar("Loss/val", val_loss, epoch)
             self.writer.add_scalar("MAE/val", val_mae, epoch)
+
+            
+
 
             if args.scheduler == 'Reduce':
                 self.scheduler.step(val_loss)
@@ -97,7 +118,7 @@ class Trainer():
               f'time: {(time.time() - t) / 60:.3f}M')
 
         # Test time
-        datasets = ['DUTS', 'DUT-O', 'HKU-IS', 'ECSSD', 'PASCAL-S']
+        datasets = ['car_data']
         for dataset in datasets:
             args.dataset = dataset
             test_loss, test_mae, test_maxf, test_avgf, test_s_m = self.test(args, os.path.join(save_path))

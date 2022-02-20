@@ -1,4 +1,9 @@
 import torch
+import matplotlib.pyplot as plt
+from config import getConfig
+import os
+
+cfg = getConfig()
 
 def to_array(feature_map):
     if feature_map.shape[0] == 1:
@@ -28,3 +33,20 @@ class AvgMeter(object):
         self.count += n
         self.avg = self.sum / self.count
         self.losses.append(val)
+
+def save_plot(t, v, e, label):
+    plt.figure(figsize=(15,8))
+    plt.plot(e,t, label=f"Train {label}")
+    plt.plot(e, v, label=f"Validation {label}")
+    plt.xticks([i for i in range(1, cfg.epochs+1, 2)])
+    plt.xlabel('epochs')
+    plt.ylabel(label)
+    plt.title(f"Train and Validation {label}")
+    plt.legend()
+    plt.grid()
+    save_path = os.path.join("./plots/", f"{label}.jpg")
+    plt.savefig(save_path)
+    plt.clf()
+
+
+
