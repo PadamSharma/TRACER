@@ -44,7 +44,7 @@ def main(cfg):
         os.makedirs(save_path, exist_ok=True)
         Trainer(cfg, save_path)
     elif cfg.action == 'test':
-        datasets = ['DUTS', 'DUT-O', 'HKU-IS', 'ECSSD', 'PASCAL-S']
+        datasets = ['car_data']
         for dataset in datasets:
             cfg.dataset = dataset
             test_loss, test_mae, test_maxf, test_avgf, test_s_m = Tester(cfg, save_path).test()
