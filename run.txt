@@ -1,0 +1,1 @@
+python main.py apply --dataset car_data --arch 5 --img_size 512 --batch_size 2 --save_map True
