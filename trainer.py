@@ -21,6 +21,7 @@ from model.TRACER import TRACER
 from postprocessing import PostProcess
 from torch.utils.tensorboard import SummaryWriter
 import matplotlib.pyplot as plt 
+from util.utils import save_plot
 
 
 
@@ -81,7 +82,8 @@ class Trainer():
             val_loss_list.append(val_loss)
             val_mae_list.append(val_mae)
 
-            plt.plot()
+            save_plot(train_loss_list, val_loss_list, epoch_list, "Loss")
+            save_plot(train_mae_list, val_mae_list, epoch_list, "MAE")
 
             # Train
             self.writer.add_scalar("Loss/train", train_loss, epoch)
