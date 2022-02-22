@@ -47,6 +47,3 @@ def save_plot(t, v, e, label):
     save_path = os.path.join("./plots/", f"{label}.jpg")
     plt.savefig(save_path)
     plt.clf()
-
-
-

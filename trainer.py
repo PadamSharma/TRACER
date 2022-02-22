@@ -14,7 +14,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 from dataloader import get_train_augmentation, get_test_augmentation, get_loader, gt_to_tensor
-from util.utils import AvgMeter
+from util.utils import AvgMeter, save_plot
 from util.metrics import Evaluation_metrics
 from util.losses import Optimizer, Scheduler, Criterion
 from model.TRACER import TRACER
