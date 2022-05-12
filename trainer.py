@@ -48,7 +48,14 @@ class Trainer():
         self.writer = SummaryWriter()
 
         # Network
-        self.model = TRACER(args).to(self.device)
+#         self.model = TRACER(args).to(self.device)
+        self.model = self.model = TRACER(args).to(self.device)
+        if args.multi_gpu:
+            self.model = nn.DataParallel(self.model).to(self.device)
+
+        
+        self.model.load_state_dict(torch.load('/content/TRACER/results/22_model_weights.pth'))
+        print('###### pre-trained Model restored #####')
 
         if args.multi_gpu:
             self.model = nn.DataParallel(self.model).to(self.device)
