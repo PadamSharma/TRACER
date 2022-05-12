@@ -4,7 +4,7 @@ def getConfig():
     parser = argparse.ArgumentParser()
     parser.add_argument('action', type=str, default='train', help='Model Training or Testing options')
     parser.add_argument('--exp_num', default=0, type=str, help='experiment_number')
-    parser.add_argument('--dataset', type=str, default='car_data', help='dataset folder name')
+    parser.add_argument('--dataset', type=str, default='', help='dataset folder name')
     parser.add_argument('--data_path', type=str, default='data/')
 
     # Model parameter settings
