@@ -80,7 +80,7 @@ class Trainer():
 
         for epoch in range(1, args.epochs + 1):
             self.epoch = epoch
-            epoch_list.append
+            epoch_list.append(epoch)
             train_loss, train_mae = self.training(args)
             train_loss_list.append(train_loss)
             train_mae_list.append(train_mae)
