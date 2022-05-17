@@ -291,7 +291,7 @@ class Tester():
         if args.save_map is not None:
             # self.output_path = os.path.join(args.output_path, 'exp'+str(self.args.exp_num), self.args.dataset)
             self.output_path = os.path.join(args.output_path, self.model_name)
-            os.makedirs(self.output_path, exist_ok=True)
+#             os.makedirs(self.output_path, exist_ok=True)
     
     @staticmethod
     def apply_mask(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
