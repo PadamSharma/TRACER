@@ -54,9 +54,10 @@ def main(cfg):
     elif cfg.action == 'apply':
         # trained_model_path = prepare_trained_model_file()
         # Tester(cfg,"./results/", "model_weights_25.pth", have_gt=False).test()
-        for model_name in os.listdir("./results/"):
-            print(f'Model ---> {model_name}')
-            Tester(cfg, save_path, model_name, have_gt=False).test()
+#         for model_name in os.listdir("./results/"):
+#             print(f'Model ---> {model_name}')
+        model_name = '/content/TRACER/results/best_model.pth'
+        Tester(cfg, save_path, model_name, have_gt=False).test()
         # print(trained_model_path)
         # input('')
         # shutil.rmtree(trained_model_path)
