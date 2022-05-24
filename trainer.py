@@ -155,7 +155,7 @@ class Trainer():
             loss = loss1 + loss2 + loss3 + loss4 + loss_mask
 
             loss.backward()
-            nn.utils.clip_grad_norm_(self.model.parameters(), args.clipping)
+#             nn.utils.clip_grad_norm_(self.model.parameters(), args.clipping)
             self.optimizer.step()
 
             # Metric
