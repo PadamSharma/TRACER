@@ -13,7 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-from dataloader import get_train_augmentation, get_test_augmentation, get_loader, gt_to_tensor
+from custom_dataloader import get_train_augmentation, get_test_augmentation, get_loader, gt_to_tensor
 from util.utils import AvgMeter, save_plot
 from util.metrics import Evaluation_metrics
 from util.losses import Optimizer, Scheduler, Criterion
@@ -46,6 +46,12 @@ class Trainer():
                                      transform=self.test_transform, seed=args.seed)
 
         self.writer = SummaryWriter()
+        self.args = args # added for val
+        self.post_process = PostProcess() # added for val
+        self.te_img_name_to_te_img_file = {
+            ntpath.basename(image_file).rpartition('.')[0]: image_file for image_file in sorted(glob.glob(self.tr_img_folder + '/*'))
+        }
+        
 
         # Network
         self.model = self.model = TRACER(args).to(self.device)
@@ -139,7 +145,7 @@ class Trainer():
         train_loss = AvgMeter()
         train_mae = AvgMeter()
 
-        for images, masks, edges in tqdm(self.train_loader):
+        for images, masks, edges, original_size, image_name in tqdm(self.train_loader):
             images = torch.tensor(images, device=self.device, dtype=torch.float32)
             masks = torch.tensor(masks, device=self.device, dtype=torch.float32)
             edges = torch.tensor(edges, device=self.device, dtype=torch.float32)
@@ -169,6 +175,13 @@ class Trainer():
         print(f'Train Loss:{train_loss.avg:.3f} | MAE:{train_mae.avg:.3f}')
 
         return train_loss.avg, train_mae.avg
+    
+    @staticmethod
+    def apply_mask(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
+        b, g, r = cv2.split(image)
+        output_mask = cv2.merge([b, g, r, mask], 4)
+
+        return output_mask
 
     def validate(self):
         self.model.eval()
@@ -176,12 +189,48 @@ class Trainer():
         val_mae = AvgMeter()
 
         with torch.no_grad():
-            for images, masks, edges in tqdm(self.val_loader):
+            for images, masks, edges, original_size, image_name in tqdm(self.val_loader):
                 images = torch.tensor(images, device=self.device, dtype=torch.float32)
                 masks = torch.tensor(masks, device=self.device, dtype=torch.float32)
                 edges = torch.tensor(edges, device=self.device, dtype=torch.float32)
 
                 outputs, edge_mask, ds_map = self.model(images)
+
+                # writing down 3 images per batch of val images in pred_map folder
+                # START ------------------------------------------------------------
+                H, W = original_size
+
+                for i in range(images.size(0)):
+                    h, w = H[i].item(), W[i].item()
+                    pred_mask = F.interpolate(outputs[i].unsqueeze(0), size=(h, w), mode='bilinear')
+                    # _, shadow_masks = inference()
+                    # Save prediction map
+                    # if self.args.save_map is not None:
+                    pred_mask = (pred_mask.squeeze().detach().cpu().numpy()*255.0).astype(np.uint8)   # convert uint8 type
+                        # if not self.have_gt:
+                            # read the original image file
+                    orig_image = cv2.imread(self.te_img_name_to_te_img_file[image_name[i]])
+
+                            # orig_image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
+                    output_image = self.apply_mask(image=orig_image, mask=pred_mask)
+                    h = orig_image.shape[0]
+                    w = orig_image.shape[1]
+                            
+
+                            
+                        # else:
+                    # print('here')
+                    # output_image = pred_mask
+                    # print(output_image.shape)
+                    # index = np.where(output_image[:,:,3] < 127)
+                    # output_image[index] = [0,0,0,0]
+                    # print(image_name[i])
+                    output_image = self.post_process.postprocess(output_image, w, h)
+                    cv2.imwrite(os.path.join('/content/TRACER/pred_map/', image_name[i]+'.png'), output_image)
+                # END-------------------------------------------------------------------------------------------
+
+
+
                 loss1 = self.criterion(outputs, masks)
                 loss2 = self.criterion(ds_map[0], masks)
                 loss3 = self.criterion(ds_map[1], masks)
