@@ -66,8 +66,12 @@ class DatasetGenerate(Dataset):
         # edge = cv2.cvtColor(edge, cv2.COLOR_BGR2GRAY)
   
         image = Image.open(self.images[idx])
+        image_name = Path(self.images[idx]).stem
         mask = Image.open(self.gts[idx])
         edge = Image.open(self.edges[idx])
+
+        org_size = image.size
+        org_size = org_size[::-1]
         image, mask, edge = self.transform_random_crop(image, mask, edge)
 
         image = np.array(image)
@@ -90,7 +94,7 @@ class DatasetGenerate(Dataset):
             edge = np.expand_dims(augmented['masks'][1], axis=0)  # (1, H, W)
             edge = edge / 255.0
 
-        return image, mask, edge
+        return image, mask, edge, org_size, image_name
 
     def __len__(self):
         return len(self.images)
@@ -146,8 +150,8 @@ def get_train_augmentation(img_size, ver):
         transforms = albu.Compose([
             albu.OneOf([
                 albu.HorizontalFlip(),
-                albu.VerticalFlip(),
-                albu.RandomRotate90()
+                # albu.VerticalFlip(),
+                # albu.RandomRotate90()
             ], p=0.5),
             albu.OneOf([
                 albu.RandomContrast(),
@@ -155,10 +159,10 @@ def get_train_augmentation(img_size, ver):
                 albu.RandomBrightness(),
             ], p=0.5),
             albu.OneOf([
-                albu.MotionBlur(blur_limit=5),
-                albu.MedianBlur(blur_limit=5),
-                albu.GaussianBlur(blur_limit=5),
-                albu.GaussNoise(var_limit=(5.0, 20.0)),
+                # albu.MotionBlur(blur_limit=5),
+                # albu.MedianBlur(blur_limit=5),
+                # albu.GaussianBlur(blur_limit=5),
+                # albu.GaussNoise(var_limit=(5.0, 20.0)),
             ], p=0.5),
             albu.Resize(img_size, img_size, always_apply=True),
             albu.Normalize([0.485, 0.456, 0.406],
