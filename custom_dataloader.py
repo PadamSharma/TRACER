@@ -80,9 +80,9 @@ class DatasetGenerate(Dataset):
 
         # print(image.shape)
 
-        cv2.imwrite('/content/TRACER/data/Test/images/'+ (self.images[idx]).split('/')[-1], image)
-        cv2.imwrite('/content/TRACER/data/Test/masks/'+  (self.gts[idx]).split('/')[-1], mask)
-        cv2.imwrite('/content/TRACER/data/Test/edges/'+  (self.edges[idx]).split('/')[-1], edge)
+#         cv2.imwrite('/content/TRACER/data/Test/images/'+ (self.images[idx]).split('/')[-1], image)
+#         cv2.imwrite('/content/TRACER/data/Test/masks/'+  (self.gts[idx]).split('/')[-1], mask)
+#         cv2.imwrite('/content/TRACER/data/Test/edges/'+  (self.edges[idx]).split('/')[-1], edge)
 
 
 
