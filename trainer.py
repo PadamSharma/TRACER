@@ -201,7 +201,7 @@ class Trainer():
                 H, W = original_size
 
                 for i in range(images.size(0)):
-                    h, w = H[i].item(), W[i].item()
+                    h, w = (640, 640)
                     pred_mask = F.interpolate(outputs[i].unsqueeze(0), size=(h, w), mode='bilinear')
                     # _, shadow_masks = inference()
                     # Save prediction map
@@ -209,8 +209,19 @@ class Trainer():
                     pred_mask = (pred_mask.squeeze().detach().cpu().numpy()*255.0).astype(np.uint8)   # convert uint8 type
                         # if not self.have_gt:
                             # read the original image file
-                    orig_image = cv2.imread(self.te_img_name_to_te_img_file[image_name[i]])
-
+                    # print('1', (images[i].cpu().numpy()).shape)
+                    # orig_image = (images[i].detach().cpu().numpy()*255.0).astype(np.uint8)
+                    # print('2', orig_image.shape)
+                    
+                    # orig_image = cv2.imread(self.te_img_name_to_te_img_file[image_name[i]])
+                    # orig_image = np.moveaxis(orig_image, 0, -1)
+                    orig_image = torch.permute(images[i], (1, 2, 0)).cpu()
+                    plt.imshow(orig_image)
+                    plt.show()
+                    # orig_image = np.array(orig_image.cpu())
+                    orig_image = (orig_image.detach().cpu().numpy()*255.0).astype(np.uint8)
+                    print(orig_image.shape)
+                    cv2.imwrite('/content/TRACER/plots/'+str(i)+'.png', orig_image)
                             # orig_image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
                     output_image = self.apply_mask(image=orig_image, mask=pred_mask)
                     h = orig_image.shape[0]

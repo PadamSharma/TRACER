@@ -94,7 +94,7 @@ class DatasetGenerate(Dataset):
             edge = np.expand_dims(augmented['masks'][1], axis=0)  # (1, H, W)
             edge = edge / 255.0
 
-        return image, mask, edge, org_size, image_name
+        return image, mask, edge,org_size,  image_name
 
     def __len__(self):
         return len(self.images)
@@ -154,9 +154,9 @@ def get_train_augmentation(img_size, ver):
                 # albu.RandomRotate90()
             ], p=0.5),
             albu.OneOf([
-                albu.RandomContrast(),
-                albu.RandomGamma(),
-                albu.RandomBrightness(),
+                # albu.RandomContrast(),
+                # albu.RandomGamma(),
+                # albu.RandomBrightness(),
             ], p=0.5),
             albu.OneOf([
                 # albu.MotionBlur(blur_limit=5),
